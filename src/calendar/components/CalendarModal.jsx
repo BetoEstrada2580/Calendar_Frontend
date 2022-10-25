@@ -33,7 +33,7 @@ export const CalendarModal = () => {
         title: '',
         notes: '',
         start: new Date(),
-        end: addHours(new Date, 4)
+        end: addHours(new Date, 2)
     });
 
     const titleClass = useMemo(() => {
@@ -66,10 +66,6 @@ export const CalendarModal = () => {
         })
     }
 
-    const openModal = () => {
-
-    }
-
     const onCloseModal = () => {
         closeDateModal();
     }
@@ -87,10 +83,15 @@ export const CalendarModal = () => {
         if (formValues.title.length <= 0) return;
 
         startSavingEvent
-        await startSavingEvent(formValues);
-        Swal.fire('Guardado', 'Evento guardado correctamente', 'success');
-        closeDateModal();
-        setFormSubmitted(false);
+        const response = await startSavingEvent(formValues);
+        if (response === true) {
+            Swal.fire('Guardado', 'Evento guardado correctamente', 'success');
+            closeDateModal();
+            setFormSubmitted(false);
+        }
+        else {
+            Swal.fire('Error al guardar', response, 'error');
+        }
     }
 
     return (
@@ -116,8 +117,8 @@ export const CalendarModal = () => {
                         selectsStart
                         startDate={formValues.start}
                         endDate={formValues.end}
-                        minDate={new Date()}
-                        maxDate={formValues.end}
+                        // minDate={new Date()}
+                        // maxDate={formValues.end}
                         showTimeSelect
                         dateFormat="d MMM yyyy, H:mm"
                         // dateFormat="Pp"
@@ -135,9 +136,9 @@ export const CalendarModal = () => {
                         selectsEnd
                         startDate={formValues.start}
                         endDate={formValues.end}
-                        minDate={formValues.start}
-                        minTime={setHours(setMinutes(new Date(), formValues.start.getMinutes()), formValues.start.getHours())}
-                        maxTime={setHours(setMinutes(addYears(new Date(), 1000), 30), 23)}
+                        // minDate={formValues.start}
+                        // minTime={setHours(setMinutes(new Date(), formValues.start.getMinutes()), formValues.start.getHours())}
+                        // maxTime={setHours(setMinutes(addYears(new Date(), 1000), 30), 23)}
                         showTimeSelect
                         dateFormat="d MMM yyyy, H:mm"
                         // dateFormat="Pp"

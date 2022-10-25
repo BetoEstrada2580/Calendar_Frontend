@@ -3,27 +3,30 @@ import { Calendar } from 'react-big-calendar';
 import { Navbar, CalendarEvent, CalendarModal, FabAddNew, FabDelete } from '../'
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { getMessagesES, localizer } from '../../helpers';
-import { useState } from 'react';
-import { useUiStore, useCalendarStore } from '../../hooks';
-
-const eventStyleGetter = (event, start, end, isSelected) => {
-
-    const style = {
-        backgroundColor: '#347CF7',
-        borderRadius: '0px',
-        opacity: 0.8,
-        color: 'white',
-    }
-
-    return {
-        style
-    }
-}
+import { useEffect, useState } from 'react';
+import { useUiStore, useCalendarStore, useAuthStore } from '../../hooks';
 
 export const CalendarPage = () => {
+    const { user } = useAuthStore();
     const [lastView, setLastView] = useState(localStorage.getItem('lastView') || 'week')
     const { openDateModal } = useUiStore();
-    const { events, setActiveEvent } = useCalendarStore();
+    const { events, setActiveEvent, startLoadingEvents } = useCalendarStore();
+
+    const eventStyleGetter = (event, start, end, isSelected) => {
+        console.log(event);
+        const isMyEvent = (user.id === event.user._id) || (user.id === event.user.id);
+
+        const style = {
+            backgroundColor: isMyEvent ? '#347CF7' : '#465660',
+            borderRadius: '0px',
+            opacity: 0.8,
+            color: 'white',
+        }
+
+        return {
+            style
+        }
+    }
 
     const onDoubleClick = (event) => {
         openDateModal();
@@ -36,6 +39,11 @@ export const CalendarPage = () => {
     const onViewChanged = (event) => {
         localStorage.setItem('lastView', event);
     }
+
+    useEffect(() => {
+        startLoadingEvents();
+    }, []);
+
 
     return (
         <>
